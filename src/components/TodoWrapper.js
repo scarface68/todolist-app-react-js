@@ -1,20 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Todo } from "./Todo";
 import { TodoForm } from "./TodoForm";
 import { v4 as uuidv4 } from "uuid";
 import { EditTodoForm } from "./EditTodoForm";
+import axios from "axios";
+
+const BACKEND_URL = "http://localhost:5000/items/";
 
 export const TodoWrapper = () => {
   const [todos, setTodos] = useState([]);
 
-  const addTodo = (todo) => {
-    setTodos([
-      ...todos,
-      { id: uuidv4(), task: todo, completed: false, isEditing: false },
-    ]);
-  }
+  // fetching the data
+  useEffect(() => {
+    axios
+      .get(BACKEND_URL)
+      .then((res) => {
+        setTodos(
+          res.data.map((item) => {
+            const editedItem = {
+              completed: item.completed,
+              isEditing: item.isEditing,
+              task: item.task,
+              id: item._id,
+            };
+            return editedItem;
+          })
+        );
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
-  const deleteTodo = (id) => setTodos(todos.filter((todo) => todo.id !== id));
+  const addTodo = (todo) => {
+    axios
+      .post(BACKEND_URL, { task: todo })
+      .then((res) => {
+        setTodos([
+          ...todos,
+          { id: res.data._id, task: todo, completed: false, isEditing: false },
+        ]);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const deleteTodo = (id) => {
+    axios
+      .delete(BACKEND_URL + id)
+      .then(() => setTodos(todos.filter((todo) => todo.id !== id)))
+      .catch((err) => console.log(err));
+  };
 
   const toggleComplete = (id) => {
     setTodos(
@@ -22,7 +55,7 @@ export const TodoWrapper = () => {
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
-  }
+  };
 
   const editTodo = (id) => {
     setTodos(
@@ -30,7 +63,7 @@ export const TodoWrapper = () => {
         todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
       )
     );
-  }
+  };
 
   const editTask = (task, id) => {
     setTodos(
@@ -39,7 +72,6 @@ export const TodoWrapper = () => {
       )
     );
   };
-
   return (
     <div className="TodoWrapper">
       <h1>Get Things Done !</h1>
