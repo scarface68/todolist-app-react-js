@@ -50,28 +50,46 @@ export const TodoWrapper = () => {
   };
 
   const toggleComplete = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+    axios
+      .patch(BACKEND_URL + id, { toBeChanged: "completed" })
+      .then((res) => {
+        setTodos(
+          todos.map((todo) =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+          )
+        );
+      })
+      .catch((err) => console.log(err));
   };
 
   const editTodo = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
-      )
-    );
+    axios
+      .patch(BACKEND_URL + id, { toBeChanged: "isEditing" })
+      .then(() => {
+        setTodos(
+          todos.map((todo) =>
+            todo.id === id ? { ...todo, isEditing: !todo.isEditing } : todo
+          )
+        );
+      })
+      .catch((err) => console.log("err", err));
   };
 
   const editTask = (task, id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, task, isEditing: !todo.isEditing } : todo
-      )
-    );
+    axios
+      .patch(BACKEND_URL + id, { toBeChanged: "isEditing", task })
+      .then(() => {
+        setTodos(
+          todos.map((todo) =>
+            todo.id === id
+              ? { ...todo, task, isEditing: !todo.isEditing }
+              : todo
+          )
+        );
+      })
+      .catch((err) => console.log(err));
   };
+  // task - task : task
   return (
     <div className="TodoWrapper">
       <h1>Get Things Done !</h1>
