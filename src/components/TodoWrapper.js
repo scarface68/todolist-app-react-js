@@ -4,7 +4,7 @@ import { TodoForm } from "./TodoForm";
 import { EditTodoForm } from "./EditTodoForm";
 import axios from "axios";
 
-const BACKEND_URL = "https://sviet-api.onrender.com/items";
+const BACKEND_URL = "https://sviet-api.onrender.com/items/";
 
 export const TodoWrapper = () => {
   const [todos, setTodos] = useState([]);
